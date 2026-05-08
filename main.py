@@ -55,9 +55,9 @@ while running:
             if event.key == pygame.K_KP9: print(abilities[9])
 
     pressed = pygame.key.get_pressed()
-    if pressed[pygame.K_o] and not pressed[pygame.K_m]: player.vel[1] -= SPEED
+    if pressed[pygame.K_i] and not pressed[pygame.K_m]: player.vel[1] -= SPEED
     if pressed[pygame.K_r] and not pressed[pygame.K_l]: player.vel[0] -= SPEED
-    if pressed[pygame.K_m] and not pressed[pygame.K_o]: player.vel[1] += SPEED
+    if pressed[pygame.K_m] and not pressed[pygame.K_i]: player.vel[1] += SPEED
     if pressed[pygame.K_l] and not pressed[pygame.K_r]: player.vel[0] += SPEED
     player.vel[0] *= FRICTION
     player.vel[1] *= FRICTION
