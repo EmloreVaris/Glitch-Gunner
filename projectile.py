@@ -9,4 +9,4 @@ class Projectile:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM projectiles WHERE id = ?", (self.pid,))
         data = cursor.fetchone()
-        raise NotImplementedError("Finish Enemy __init__() bro.")
+        raise NotImplementedError("Finish Projectile __init__() bro.")
