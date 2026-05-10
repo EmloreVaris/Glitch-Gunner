@@ -1,10 +1,10 @@
 import pygame
-import math
 import random
 from player import Player
 from projectile import Projectile
-from enemy import Enemy
+from enemy import Enemy #type:ignore
 from const import *
+from enemydata import enemy_data
 
 pygame.init()
 
@@ -12,10 +12,17 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
 abilities = [f"ABILITY {i}" if random.random() > .5 else None for i in range(10)]
-projectiles = []
+projectiles: list[Projectile] = []
 
 player = Player()
 failed = 0
+
+enemies: list[Enemy] = []
+hit_cooldown = 0
+tick = 0
+tick_speed = round(random.random() * 51 + 10)
+trip_countdown = 0
+enemychances = [1 for _ in range(10)]
 
 running = True
 while running:
@@ -23,25 +30,19 @@ while running:
         if event.type == pygame.QUIT: running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                print("shoot")
-                try:
-                    diffx = event.pos[0] - player.pos[0]
-                    diffy = player.pos[1] - event.pos[1]
-                    if diffx == 0 and diffy = 0:
-                        num = -1 + random.random() * 2
-                    if diffx == 0:
-                        projectiles.append(Projectile(1, (diffx / abs(diffx), 0), player.pos))
-                    elif diffy == 0:
-                        projectiles.append()
-                        direction = player.pos[1] - event.pos[1]
-                        direction /= -abs(direction)
-                        projectiles.append(Projectile(1, (0, 1 * direction), player.pos))
-                        continue
-                    projectiles.append(Projectile(1, (), player.pos))
-                except ArithmeticError:
-                    direction = player.pos[0] - event.pos[0]
-                    directon /= abs(direction)
-                    projectiles.append(Projectile(1, (direction, 0), player.pos))
+                diffx = event.pos[0] - player.pos[0]
+                diffy = player.pos[1] - event.pos[1]
+                offset = 0
+                if player.get("sprd"):
+                    if player.get("sprd") > 0: offset = (random.random() * 2 - 1) * player.get("sprd") / 10
+                if diffx == 0 and diffy == 0:
+                    num = -1 + random.random() * 2
+                if diffx == 0:
+                    projectiles.append(Projectile(1, (0, -diffy / abs(diffy)), player.pos))
+                elif diffy == 0:
+                    projectiles.append(Projectile(1, (diffx / abs(diffx), 0), player.pos))
+                else:
+                    projectiles.append(Projectile(1, ((diffx + offset) / (abs(diffx) + abs(diffy) + offset), (-diffy + offset) / (abs(diffx) + abs(diffy) + offset)), player.pos))
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_KP0: print(abilities[0])
             if event.key == pygame.K_KP1: print(abilities[1])
@@ -55,35 +56,75 @@ while running:
             if event.key == pygame.K_KP9: print(abilities[9])
 
     pressed = pygame.key.get_pressed()
-    if pressed[pygame.K_i] and not pressed[pygame.K_m]: player.vel[1] -= SPEED
-    if pressed[pygame.K_r] and not pressed[pygame.K_l]: player.vel[0] -= SPEED
-    if pressed[pygame.K_m] and not pressed[pygame.K_i]: player.vel[1] += SPEED
-    if pressed[pygame.K_l] and not pressed[pygame.K_r]: player.vel[0] += SPEED
-    player.vel[0] *= FRICTION
-    player.vel[1] *= FRICTION
+    direction = 0
+    if pressed[pygame.K_i]: direction += 1
+    if pressed[pygame.K_r]: direction += 3
+    if pressed[pygame.K_m]: direction -= 1
+    if pressed[pygame.K_l]: direction -= 3
+    if trip_countdown:
+        trip_countdown -= 1
+    else:
+        player.apply_vel(direction)
+        if player.get("trip"):
+            trip_countdown = tick_speed if random.random() * 100 < player.get('trip') / 5 else 0
 
-    player.pos[0] += player.vel[0]
-    player.pos[1] += player.vel[1]
-    if player.pos[0] < PLAYER_SIZE_X / 2 + SCREEN_MARGIN:
-        player.pos[0] = PLAYER_SIZE_X / 2 + SCREEN_MARGIN
-        player.vel[0] = 0
-    if player.pos[0] > SCREEN_WIDTH - PLAYER_SIZE_X / 2 - SCREEN_MARGIN:
-        player.pos[0] = SCREEN_WIDTH - PLAYER_SIZE_X / 2 - SCREEN_MARGIN
-        player.vel[0] = 0
-    if player.pos[1] < PLAYER_SIZE_Y / 2 + SCREEN_MARGIN:
-        player.pos[1] = PLAYER_SIZE_Y / 2 + SCREEN_MARGIN
-        player.vel[1] = 0
-    if player.pos[1] > SCREEN_HEIGHT - PLAYER_SIZE_Y / 2 - SCREEN_MARGIN:
-        player.pos[1] = SCREEN_HEIGHT - PLAYER_SIZE_Y / 2 - SCREEN_MARGIN
-        player.vel[1] = 0
+    player.slow()
+
+    screen.fill((0, 0, 0))
+    player.move()
+    for projectile in projectiles:
+        projectile.display(screen)
+        spd = 1
+        if player.get("bspd"):
+            spd *= pow(1.05, player.get("bspd"))
+        projectile.move(spd)
+        if not 0 <= projectile.pos[0] <= SCREEN_WIDTH or not 0 <= projectile.pos[1] <= SCREEN_HEIGHT:
+            projectiles.remove(projectile)
+            continue
+        for enemy in enemies:
+            if enemy.hit_by_bullet(projectile):
+                if player.get("dmg"):
+                    player.exp += enemy.damage(projectile.damage * pow(1.05, player.get("dmg")), enemies)
+                else:
+                    player.exp += enemy.damage(projectile.damage, enemies)
+                projectiles.remove(projectile)
+                break
+    
+    for enemy in enemies:
+        enemy.display(screen)
+        enemy.move(player.pos)
+        if enemy.touching_player(player.pos):
+            if hit_cooldown <= 0:
+                hit_cooldown = 20
+                defense = 1
+                if player.get("def"):
+                    defense = pow(.99, player.get("def") - 1)
+                player.health -= enemy.dmg * defense
+                if player.health <= 0:
+                    running = False
+    hit_cooldown -= 1
 
     if random.random() * 1_000_000_000 <= 1 + failed:
         running = False
     else:
         failed += random.random()
     
-    screen.fill((30, 70, 255))
+    if player.exp >= round(20 * pow(1.1, player.lvl - 1)):
+        player.levelup(screen)
+    
     pygame.draw.rect(screen, (255, 80, 90), (player.pos[0] - PLAYER_SIZE_X / 2, player.pos[1] - PLAYER_SIZE_Y / 2, PLAYER_SIZE_X, PLAYER_SIZE_Y), border_radius=9)
 
+    pygame.draw.rect(screen, (20, 20, 20), (10, 10, SCREEN_WIDTH - 20, 30), border_radius=7)
+    pygame.draw.rect(screen, (20, 200, 20), (10, 10, (SCREEN_WIDTH - 20) * (player.exp / round(20 * pow(1.1, player.lvl - 1))), 30), border_radius=7)
+
     pygame.display.flip()
-    clock.tick(min(60.00000000000001,65.00000000000001-2.20000000000001**math.log(random.random()*pow(math.sqrt(5.00000000000001),2.00000000000001),1.45000000000001)//(1.00000000000001++-+-+---++1.00000000000001+--++-+-++--+1.00000000000001))//1)
+    clock.tick(tick_speed)
+    tick += 1
+    if tick >= tick_speed:
+        tick = 0
+        tick_speed = round(random.random() * 51 + 10)
+        enemies.append(Enemy(random.choice(enemychances), (random.random() * SCREEN_WIDTH, random.random() * SCREEN_HEIGHT)))
+        enemychances = enemychances[1:]
+        enemychances.append(random.randint(1, max(min(round(player.lvl // 5), max(enemy_data.keys())), 1)))
+
+print(player.upgrades, player.modifiers)
