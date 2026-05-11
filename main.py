@@ -26,6 +26,34 @@ async def main():
         tick_speed = round(random.random() * 51 + 10)
         trip_countdown = 0
         enemychances = [1 for _ in range(10)]
+        warning = True
+        while warning and running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        warning = False
+            screen.fill((0, 0, 0))
+            text = pygame.font.SysFont("arial", 150).render("EPILEPSY WARNING!!", True, (122, 122, 122))
+            screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
+            pygame.display.update()
+            clock.tick(60)
+            await asyncio.sleep(0)
+        warning = True
+        while warning and running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        warning = False
+            screen.fill((0, 0, 0))
+            text = pygame.font.SysFont("arial", 150).render("JUST MAKING SURE YOU KNOW!!", True, (122, 122, 122))
+            screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
+            pygame.display.update()
+            clock.tick(60)
+            await asyncio.sleep(0)
         while title and running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: running = False

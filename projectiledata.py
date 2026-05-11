@@ -24,7 +24,7 @@ projectile_data = {
         "speed": 1,
         "color": 2,
         "size": 40,
-        "damage": 2,
+        "damage": 3,
         "effect": 1
     }
 }
