@@ -15,6 +15,76 @@ async def main():
     highscore = 0
     running = True
     failed = 0
+    intro = True
+    while intro and running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    intro = False
+        screen.fill((0, 0, 0))
+        text = pygame.font.SysFont("arial", 150).render("A game by Emlore", True, (122, 122, 122))
+        screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
+        pygame.display.update()
+        clock.tick(60)
+        await asyncio.sleep(0)
+    intro = True
+    while intro and running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    intro = False
+        screen.fill((0, 0, 0))
+        text = pygame.font.SysFont("arial", 150).render("This game is bad", True, (122, 122, 122))
+        screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
+        pygame.display.update()
+        clock.tick(60)
+        await asyncio.sleep(0)
+    intro = True
+    while intro and running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    intro = False
+        screen.fill((0, 0, 0))
+        text = pygame.font.SysFont("arial", 150).render("IntentTionaly", True, (122, 122, 122))
+        screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
+        pygame.display.update()
+        clock.tick(60)
+        await asyncio.sleep(0)
+    warning = True
+    while warning and running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    warning = False
+        screen.fill((0, 0, 0))
+        text = pygame.font.SysFont("arial", 150).render("EPILEPSY WARNING!!", True, (122, 122, 122))
+        screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
+        pygame.display.update()
+        clock.tick(60)
+        await asyncio.sleep(0)
+    warning = True
+    while warning and running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    warning = False
+        screen.fill((0, 0, 0))
+        text = pygame.font.SysFont("arial", 150).render("JUST MAKING SURE YOU KNOW!!", True, (122, 122, 122))
+        screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
+        pygame.display.update()
+        clock.tick(60)
+        await asyncio.sleep(0)
     while running:
         abilities = [f"ABILITY {i}" if random.random() > .5 else None for i in range(10)]
         projectiles: list[Projectile] = []
@@ -25,34 +95,6 @@ async def main():
         tick_speed = round(random.random() * 51 + 10)
         trip_countdown = 0
         enemychances = [1 for _ in range(10)]
-        warning = True
-        while warning and running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        warning = False
-            screen.fill((0, 0, 0))
-            text = pygame.font.SysFont("arial", 150).render("EPILEPSY WARNING!!", True, (122, 122, 122))
-            screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
-            pygame.display.update()
-            clock.tick(60)
-            await asyncio.sleep(0)
-        warning = True
-        while warning and running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        warning = False
-            screen.fill((0, 0, 0))
-            text = pygame.font.SysFont("arial", 150).render("JUST MAKING SURE YOU KNOW!!", True, (122, 122, 122))
-            screen.blit(text, (SCREEN_WIDTH / 2 - text.get_width() / 2, SCREEN_HEIGHT / 2 - 75))
-            pygame.display.update()
-            clock.tick(60)
-            await asyncio.sleep(0)
         title = True
         while title and running:
             for event in pygame.event.get():
