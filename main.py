@@ -4,7 +4,7 @@ import random
 import time
 from player import Player
 from projectile import Projectile
-from enemy import Enemy #type:ignore
+from enemy import Enemy
 from const import *
 from enemydata import enemy_data
 from projectiledata import projectile_data
