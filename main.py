@@ -14,12 +14,11 @@ clock = pygame.time.Clock()
 async def main():
     highscore = 0
     running = True
+    failed = 0
     while running:
-        title = True
         abilities = [f"ABILITY {i}" if random.random() > .5 else None for i in range(10)]
         projectiles: list[Projectile] = []
         player = Player()
-        failed = 0
         enemies: list[Enemy] = []
         hit_cooldown = 0
         tick = 0
@@ -54,6 +53,7 @@ async def main():
             pygame.display.update()
             clock.tick(60)
             await asyncio.sleep(0)
+        title = True
         while title and running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: running = False
