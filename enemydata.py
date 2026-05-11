@@ -18,10 +18,20 @@ enemy_data = {
         "sizex": 60,
         "sizey": 70,
         "color": 2
+    },
+    3: {
+        "health": 3,
+        "damage": 2,
+        "speed": 9,
+        "drops": 2,
+        "variance": 1,
+        "sizex": 10,
+        "sizey": 10,
+        "color": 3
     }
 }
-
 enemy_colors = {
     1: (255, 255, 255),
-    2: (200, 255, 200)
+    2: (200, 255, 200),
+    2: (140, 205, 180)
 }

@@ -3,7 +3,7 @@ from downgrades import upgrades
 import random
 import pygame
 import typing
-
+import asyncio
 class Player:
     def __init__(self) -> None:
         self.health = 100.0
@@ -18,7 +18,6 @@ class Player:
         self.lvl = 1
         self.upgrades: list[str] = []
         self.modifiers: dict[str, int] = {}
-    
     def move(self) -> tuple[float, float]:
         if self.get("spd"):
             self.pos = (self.pos[0] + self.vel[0] * pow(1.05, self.get("spd")), self.pos[1] + self.vel[1] * pow(1.05, self.get("spd")))
@@ -36,13 +35,10 @@ class Player:
         if self.pos[1] > SCREEN_HEIGHT - self.sizey / 2 - SCREEN_MARGIN:
             self.pos = (self.pos[0], SCREEN_HEIGHT - self.sizey / 2 - SCREEN_MARGIN)
             self.vel = (self.vel[0], 0)
-        
         return self.pos
-        
     def slow(self) -> tuple[float, float]:
         self.vel = (self.vel[0] * FRICTION, self.vel[1] * FRICTION)
         return self.vel
-    
     def apply_vel(self, direction: int) -> tuple[float, float]:
         if direction == 0:
             return self.vel
@@ -57,8 +53,7 @@ class Player:
         else:
             self.vel = (self.vel[0] - SPEED, self.vel[1] - SPEED * (direction // 4))
         return self.vel
-    
-    def levelup(self, screen: pygame.Surface) -> None:
+    async def levelup(self, screen: pygame.Surface) -> None:
         level = 0
         while self.exp >= round(20 * pow(1.1, self.lvl - 1)):
             self.exp -= round(20 * pow(1.1, self.lvl - 1))
@@ -99,9 +94,9 @@ class Player:
                         name = name[1:]
                     screen.blit(font.render(line, True, (165, 98, 204)), (SCREEN_WIDTH / 2 - 40 + (index - 1) * 120, SCREEN_HEIGHT / 2 - 60 + linenum * 25))
                 pygame.display.update()
+                await asyncio.sleep(0)
             self.lvl += 1
         self.recall()
-    
     def recall(self) -> None:
         self.modifiers = {}
         modifiers: list[str] = []
@@ -121,7 +116,6 @@ class Player:
                 if downgrade[:downgrade.index("-")] not in self.modifiers:
                     self.modifiers[downgrade[:downgrade.index("-")]] = 0
                 self.modifiers[downgrade[:downgrade.index("-")]] -= downgrade.count("-")
-
     def get(self, modifier: str) -> int:
         try:
             return self.modifiers[modifier]

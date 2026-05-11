@@ -1,4 +1,14 @@
 upgrades: dict[range, dict[str, dict[str, list[str]]]] = {
+    range(1, 1000): {
+        "New Bullets": {
+            "benefit": ["blt+"],
+            "detriment": []
+        },
+        "Old Bullets": {
+            "benefit": [],
+            "detriment": ["blt-"]
+        }
+    },
     range(1, 20): {
         "Running Shoes": {
             "benefit": ["spd++"],
